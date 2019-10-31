@@ -4,10 +4,11 @@ import pygsvd
 import numpy as np
 import pytest
 
+
 def _load_matrices(mattype):
     return tuple(map(np.loadtxt,
-            ('{}/{}.txt'.format(mattype, x) for x in
-            ('a', 'b', 'c', 's', 'x', 'u', 'v'))))
+                     ('{}/{}.txt'.format(mattype, x) for x in
+                      ('a', 'b', 'c', 's', 'x', 'u', 'v'))))
 
 
 def test_square_matrices():
@@ -19,7 +20,7 @@ def test_square_matrices():
     '''
     matrices = _load_matrices('square')
     outputs = pygsvd.gsvd(matrices[0], matrices[1],
-            full_matrices=True, extras='uv')
+                          full_matrices=True, extras='uv')
     for xin, xout in zip(matrices[2:], outputs):
         assert np.allclose(np.abs(xin), np.abs(xout))
     c, s, x, u, v = outputs
@@ -37,14 +38,14 @@ def test_nonsquare_matrices():
     '''
     matrices = _load_matrices('nonsquare')
     outputs = pygsvd.gsvd(matrices[0], matrices[1],
-            full_matrices=True, extras='uv')
+                          full_matrices=True, extras='uv')
     max_size = matrices[0].shape[1]
     c, s, x, u, v = outputs
     for xin, xout in zip(matrices[2:4], (c, s)):
         assert np.allclose(np.abs(xin), np.abs(xout))
     for xin, xout in zip(matrices[4:], (x, u, v)):
         assert np.allclose(np.abs(xin[:, :max_size]),
-                np.abs(xout[:, :max_size]))
+                           np.abs(xout[:, :max_size]))
     assert np.allclose(u[:, :max_size].dot(np.diag(c)).dot(x.T), matrices[0])
     assert np.allclose(v[:, :max_size].dot(np.diag(s)).dot(x.T), matrices[1])
 
@@ -61,17 +62,24 @@ def test_nonsquare_matrices_p_lt_n_lt_m():
     '''
     matrices = _load_matrices('nonsquare2')
     outputs = pygsvd.gsvd(matrices[0], matrices[1],
-            full_matrices=True, extras='uv')
+                          full_matrices=True, extras='uv')
     max_size = matrices[0].shape[1]
+    p = matrices[1].shape[0]
     c, s, x, u, v = outputs
     for xin, xout in zip(matrices[2:4], (c, s)):
         assert np.allclose(np.abs(xin), np.abs(xout))
     for xin, xout in zip(matrices[4:], (x, u, v)):
         assert np.allclose(np.abs(xin[:, :max_size]),
-                np.abs(xout[:, :max_size]))
-    assert np.allclose(u[:, :max_size].dot(np.diag(c)).dot(x.T), matrices[0])
-    assert np.allclose(v[:, :max_size].dot(np.diag(s)).dot(x.T), matrices[1])
-
+                           np.abs(xout[:, :max_size]))
+    # Before we can do these product tests, we need to get c and s in the
+    # right dimensions for the product.  This is a bit clunky.
+    cc = np.ones(max_size)
+    cc[max_size-p:] = c
+    cc = np.diag(cc)
+    ss = np.zeros((p, max_size))
+    ss[:, max_size-p:] = np.diag(s)
+    assert np.allclose(u[:, :max_size].dot(cc).dot(x.T), matrices[0])
+    assert np.allclose(v[:, :max_size].dot(ss).dot(x.T), matrices[1])
 
 
 def test_rank_deficient_matrices():
@@ -83,7 +91,7 @@ def test_rank_deficient_matrices():
     '''
     matrices = _load_matrices('rank-deficient')
     outputs = pygsvd.gsvd(matrices[0], matrices[1],
-            full_matrices=True, extras='uv')
+                          full_matrices=True, extras='uv')
     for xin, xout in zip(matrices[2:], outputs):
         assert np.allclose(np.abs(xin), np.abs(xout))
     c, s, x, u, v = outputs
@@ -95,7 +103,7 @@ def test_large_matrices():
     '''Test the correctness of the routine on larger matrices.'''
     matrices = _load_matrices('large')
     c, s, x, u, v = pygsvd.gsvd(matrices[0], matrices[1],
-            full_matrices=True, extras='uv')
+                                full_matrices=True, extras='uv')
     assert np.allclose(u.dot(np.diag(c)).dot(x.T), matrices[0])
     assert np.allclose(v.dot(np.diag(s)).dot(x.T), matrices[1])
 
@@ -141,8 +149,8 @@ def test_return_extras():
     '''Verify that the extra arrays are returned as expected.'''
     names = ('a', 'b', 'c', 's', 'x', 'u', 'v')
     matrices = dict(zip(names,
-            map(np.loadtxt, ('square/{}.txt'.format(name)
-            for name in names))))
+                        map(np.loadtxt, ('square/{}.txt'.format(name)
+                                         for name in names))))
     extras = 'uv'
 
     # Make all combinations of 'uv' of length 0 through 3, inclusive
@@ -155,7 +163,7 @@ def test_return_extras():
 
             # Compute GSVD including the extras, assigned to a dict
             out = dict(zip(('c', 's', 'r') + combo,
-                    pygsvd.gsvd(matrices['a'], matrices['b'], extras=ex)))
+                           pygsvd.gsvd(matrices['a'], matrices['b'], extras=ex)))
 
             # Compare each extra output to the expected
             for each in combo:
@@ -173,8 +181,8 @@ def test_complex():
     a = np.loadtxt('square/a.txt')
     b = np.loadtxt('square/b.txt').astype(np.complex)
     c, s, x, u, v = pygsvd.gsvd(a, b, full_matrices=True, extras='uv')
-    assert c.dtype == np.double # Singular values are always real
-    assert s.dtype == np.double # Singular values are always real
+    assert c.dtype == np.double  # Singular values are always real
+    assert s.dtype == np.double  # Singular values are always real
     for matrix in (x, u, v):
         assert np.iscomplexobj(matrix)
     assert np.allclose(u.dot(np.diag(c)).dot(x.T.conj()), a)
