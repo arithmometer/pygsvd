@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 
 def _load_matrices(mattype):
-    return tuple(map(np.loadtxt, 
-            ('{}/{}.txt'.format(mattype, x) for x in 
+    return tuple(map(np.loadtxt,
+            ('{}/{}.txt'.format(mattype, x) for x in
             ('a', 'b', 'c', 's', 'x', 'u', 'v'))))
 
 
@@ -43,10 +43,35 @@ def test_nonsquare_matrices():
     for xin, xout in zip(matrices[2:4], (c, s)):
         assert np.allclose(np.abs(xin), np.abs(xout))
     for xin, xout in zip(matrices[4:], (x, u, v)):
-        assert np.allclose(np.abs(xin[:, :max_size]), 
+        assert np.allclose(np.abs(xin[:, :max_size]),
                 np.abs(xout[:, :max_size]))
     assert np.allclose(u[:, :max_size].dot(np.diag(c)).dot(x.T), matrices[0])
     assert np.allclose(v[:, :max_size].dot(np.diag(s)).dot(x.T), matrices[1])
+
+
+def test_nonsquare_matrices_p_lt_n_lt_m():
+    '''Test that the correctness of the routine on non-square matrices
+       a (mxn) and b (pxn), with p < n < m, where a has full column rank
+       b has full row rank and m + p > n.
+
+    This verifies that the returned matrices have the expected
+    values, but only up to the number of columns in the inputs.
+    The remaining columns are neither constrained nor relevant.
+    It also verifies the reconstruction
+    '''
+    matrices = _load_matrices('nonsquare2')
+    outputs = pygsvd.gsvd(matrices[0], matrices[1],
+            full_matrices=True, extras='uv')
+    max_size = matrices[0].shape[1]
+    c, s, x, u, v = outputs
+    for xin, xout in zip(matrices[2:4], (c, s)):
+        assert np.allclose(np.abs(xin), np.abs(xout))
+    for xin, xout in zip(matrices[4:], (x, u, v)):
+        assert np.allclose(np.abs(xin[:, :max_size]),
+                np.abs(xout[:, :max_size]))
+    assert np.allclose(u[:, :max_size].dot(np.diag(c)).dot(x.T), matrices[0])
+    assert np.allclose(v[:, :max_size].dot(np.diag(s)).dot(x.T), matrices[1])
+
 
 
 def test_rank_deficient_matrices():
@@ -81,7 +106,7 @@ def test_same_columns():
     '''
     with pytest.raises(ValueError):
         pygsvd.gsvd(np.arange(10).reshape(5, 2), np.arange(10).reshape(2, 5))
-        
+
 
 def test_dimensions():
     '''Verify that the input succeeds with 1D arrays (which are promoted
@@ -115,7 +140,7 @@ def test_non_full_matrices():
 def test_return_extras():
     '''Verify that the extra arrays are returned as expected.'''
     names = ('a', 'b', 'c', 's', 'x', 'u', 'v')
-    matrices = dict(zip(names, 
+    matrices = dict(zip(names,
             map(np.loadtxt, ('square/{}.txt'.format(name)
             for name in names))))
     extras = 'uv'
@@ -129,7 +154,7 @@ def test_return_extras():
             ex = ''.join(combo)
 
             # Compute GSVD including the extras, assigned to a dict
-            out = dict(zip(('c', 's', 'r') + combo, 
+            out = dict(zip(('c', 's', 'r') + combo,
                     pygsvd.gsvd(matrices['a'], matrices['b'], extras=ex)))
 
             # Compare each extra output to the expected
