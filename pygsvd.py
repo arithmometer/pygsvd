@@ -7,16 +7,16 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
     shape ``(p, n)``
 
     The GSVD is defined as a joint decomposition, as follows.
-        
+
         A = U*C*X.T
         B = V*S*X.T
-    
+
     where
 
         C.T*C + S.T*S = I
 
     where ``U`` and ``V`` are unitary matrices.
-        
+
     Parameters
     ----------
     A, B : ndarray
@@ -28,8 +28,8 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
         at most ``p`` columns and ``C`` and ``S`` are of length ``p``.
     extras : str, optional
         A string indicating which of the orthogonal transformation
-        matrices should be computed. By default, this only computes 
-        the generalized singular values in ``C`` and ``S``, and the 
+        matrices should be computed. By default, this only computes
+        the generalized singular values in ``C`` and ``S``, and the
         right generalized singular vectors in ``X``. The string may
         contain either 'u' or 'v' to indicate that the corresponding
         matrix is to be computed.
@@ -46,11 +46,11 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
         The right generalized singular vectors of ``A`` and ``B``.
     U : ndarray
         The left generalized singular vectors of ``A``, with
-        shape ``(m, m)``. This is only returned if 
+        shape ``(m, m)``. This is only returned if
         ``'u' in extras`` is True.
     V : ndarray
         The left generalized singular vectors of ``B``, with
-        shape ``(p, p)``. This is only returned if 
+        shape ``(p, p)``. This is only returned if
         ``'v' in extras`` is True.
 
     Raises
@@ -90,7 +90,7 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
     # Allocate input arrays to LAPACK routine
     compute_uv = tuple(each in extras for each in 'uv')
     sizes = (m, p)
-    U, V = (np.zeros((size, size), dtype=dtype) if compute 
+    U, V = (np.zeros((size, size), dtype=dtype) if compute
             else np.zeros((1, 1), dtype=dtype)
             for size, compute in zip(sizes, compute_uv))
     Q = np.zeros((n, n), dtype=dtype)
@@ -102,6 +102,7 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
     k, l = _gsvd.gsvd(Ac, Bc, U, V, Q, C, S, iwork,
             compute_uv[0], compute_uv[1])
 
+    print("k", k, "l", l)
     # Compute X
     R = _extract_R(Ac, Bc, k, l)
     X = R.dot(Q.T).T
@@ -111,14 +112,26 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
     ix = np.argsort(C[:rank])[::-1]
     C = C[ix]
     S = S[ix]
+    if p < n:
+        # 0s and 1s should appear first. Remove these to get size p.
+        C = C[n-p:]
+        S = S[n-p:]
     X[:, :rank] = X[:, ix]
     if compute_uv[0]:
         U[:, :rank] = U[:, ix]
     if compute_uv[1]:
-        # Handle rank-deficient inputs
-        if k:
-            V = np.roll(V, k, axis=1)
-        V[:, :rank] = V[:, ix]
+        if p >= n:
+            # Handle rank-deficient inputs
+            if k:
+                V = np.roll(V, k, axis=1)
+            V[:, :rank] = V[:, ix]
+        else:
+            # Delete indices corresponding to C and S values that have been removed
+            # then renumber remaining indices starting from 0.
+            # Clunky -- should be a better way
+            ix2 = np.array([ix[j]-(n-p) for j in ix if ix[j] >= n-p])
+            if ix2.shape[0] > 0:
+                V = V[:, ix2]
     if not full_matrices:
         X = X[:, :rank]
         if compute_uv[0]:
@@ -126,7 +139,7 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
         if compute_uv[1]:
             V = V[:, :rank]
 
-    outputs = (C, S, X) + tuple(arr for arr, compute in 
+    outputs = (C, S, X) + tuple(arr for arr, compute in
             zip((U, V), compute_uv) if compute)
     return outputs
 
