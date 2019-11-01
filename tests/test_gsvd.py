@@ -114,6 +114,7 @@ def test_nonsquare_matrices_p_lt_n_m():
     assert np.allclose(u[:, :max_size].dot(cc).dot(x.T), matrices[0])
     assert np.allclose(v[:, :max_size].dot(ss).dot(x.T), matrices[1])
 
+
 def test_nonsquare_matrices_p_lt_n_eq_m():
     '''Test that the correctness of the routine on non-square matrices
        a (mxn) and b (pxn), with p < n = m, where a has full column rank
@@ -132,8 +133,6 @@ def test_nonsquare_matrices_p_lt_n_eq_m():
     a = la.matrix_power(sla.toeplitz(c), power)  # n x n blur array
     o = np.ones(n)
     b = (np.zeros((n, n)) - np.diag(o) + np.diag(o[:n-1], 1))[:n-1,:]
-    print(a)
-    print(b)
     outputs = pygsvd.gsvd(a,b,
                           full_matrices=True, extras='uv')
     max_size = a.shape[1]
@@ -146,10 +145,6 @@ def test_nonsquare_matrices_p_lt_n_eq_m():
     cc = np.diag(cc)
     ss = np.zeros((p, max_size))
     ss[:, max_size-p:] = np.diag(s)
-    print("v", v)
-    print("max_size", max_size)
-    print("ss", ss)
-    print("x",x)
     assert np.allclose(u[:, :max_size].dot(cc).dot(x.T), a)
     assert np.allclose(v[:, :max_size].dot(ss).dot(x.T), b)
 
