@@ -101,8 +101,6 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
     # Compute GSVD via LAPACK wrapper, returning the effective rank
     k, l = _gsvd.gsvd(Ac, Bc, U, V, Q, C, S, iwork,
             compute_uv[0], compute_uv[1])
-
-    print("k", k, "l", l)
     # Compute X
     R = _extract_R(Ac, Bc, k, l)
     X = R.dot(Q.T).T
@@ -129,7 +127,7 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
             # Delete indices corresponding to C and S values that have been removed
             # then renumber remaining indices starting from 0.
             # Clunky -- should be a better way
-            ix2 = np.array([ix[j]-(n-p) for j in ix if ix[j] >= n-p])
+            ix2 = np.array([j-(n-p) for j in ix if j >= n-p])
             if ix2.shape[0] > 0:
                 V = V[:, ix2]
     if not full_matrices:
