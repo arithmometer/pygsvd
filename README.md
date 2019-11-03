@@ -13,9 +13,9 @@ or a column duplicated in both A and B, are present.  It gives a
 warning if the rank of A or B is not its minimum dimension.  It also
 warns if the combined matrix (A.T, B.T).T does not have full column
 rank.  It maintains the sort order of the singular values of the
- original code by bneaker, opposite to the convention in Matlab,
-and adds an option to return the inverse transpose of X instead of X
-as defined below.
+original code by Benjamin Neacker, opposite to the convention in
+Matlab, and adds an option to return the inverse transpose of X
+instead of X as defined below.
 
 ## Overview
 
