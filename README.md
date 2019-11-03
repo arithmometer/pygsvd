@@ -2,7 +2,20 @@
 
 A Python wrapper to the LAPACK generalized singular value decomposition.
 
+This code is based heavily on the code by
+
 (C) 2017 Benjamin Naecker bnaecker@fastmail.com
+
+but the focus is generating correct results for all cases of
+nonsquare A and B matrices.  It cannot currently compute the GSVD
+when rank deficiency issues, such as a zero row in a square A or B,
+or a column duplicated in both A and B, are present.  It gives a
+warning if the rank of A or B is not its minimum dimension.  It also
+warns if the combined matrix (A.T, B.T).T does not have full column
+rank.  It maintains the sort order of the singular values of the
+ original code by bneaker, opposite to the convention in Matlab,
+and adds an option to return the inverse transpose of X instead of X
+as defined below.
 
 ## Overview
 
@@ -22,14 +35,14 @@ precision versions (`zggsvd3`).
 Because the `pygsvd` module wraps a LAPACK routine itself, it is provided
 as a Python and NumPy extension module. The module must be compiled,
 and doing so requires a LAPACK header and a shared library. The module
-currently supports both the standard C bindings to LAPACK (called 
+currently supports both the standard C bindings to LAPACK (called
 [LAPACKE](http://www.netlib.org/lapack/lapacke.html)),
 and those provided by Intel's Math Kernel Library. Notably it does *not*
 support Apple's Accelerate framework, which seems to be outdated and
 differs in several subtle and annoying ways.
 
-You can build against either of the supported implementations, by editing 
-the `setup.cfg` file. Set the `define=` line in the file to be one of 
+You can build against either of the supported implementations, by editing
+the `setup.cfg` file. Set the `define=` line in the file to be one of
 `USE_LAPACK` (the default) or `USE_MKL`.
 
 You must also add the include and library directories for these. The
