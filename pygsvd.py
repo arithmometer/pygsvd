@@ -1,7 +1,9 @@
 import numpy as np
+import numpy.linalg as la
 import _gsvd
 
-def gsvd(A, B, full_matrices=False, extras='uv'):
+
+def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
     '''Compute the generalized singular value decomposition of
     a pair of matrices ``A`` of shape ``(m, n)`` and ``B`` of
     shape ``(p, n)``
@@ -10,6 +12,11 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
 
         A = U*C*X.T
         B = V*S*X.T
+
+        or
+
+        A = U*C*inv(X1)
+        B = V*S*inv(X1)
 
     where
 
@@ -33,6 +40,10 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
         right generalized singular vectors in ``X``. The string may
         contain either 'u' or 'v' to indicate that the corresponding
         matrix is to be computed.
+    X1 : bool, optional
+        If ``True``, X inverse transpose is returned in place of the
+        default X matrix.  This may be useful for regularization
+        routines.  This matrix satisfies U.T@A@X = C, V.T@B@X = S.
 
     Returns
     -------
@@ -58,6 +69,9 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
     A ValueError is raised if ``A`` and ``B`` do not have the same
     number of columns, or if they are not both 2D (1D input arrays
     will be promoted).
+
+    A ValueError is raised if (A.T, B.T).T does not have full column rank.
+    This is due to complexities of sorting and may be removed later.
 
     A RuntimeError is raised if the underlying LAPACK routine fails.
 
@@ -100,45 +114,82 @@ def gsvd(A, B, full_matrices=False, extras='uv'):
 
     # Compute GSVD via LAPACK wrapper, returning the effective rank
     k, l = _gsvd.gsvd(Ac, Bc, U, V, Q, C, S, iwork,
-            compute_uv[0], compute_uv[1])
-    # Compute X
+                      compute_uv[0], compute_uv[1])
+    # r is the rank of (A.T, B.T)
+    # l is the rank of B
+    r = k + l
+    if r < n:
+        print('''Warning: This code currently assumes rank(A.T, B.T)=n''')
+    if l != min(p, n):
+        print('''Warning: This code currently assumes the rank of B to be
+                 the minimum of its rows and columns''')
+    if la.matrix_rank(A) != min(m, n):
+        print('''Warning: This code currently assumes the rank of A to be
+                 the minimum of its rows and columns''')
     R = _extract_R(Ac, Bc, k, l)
-    X = R.dot(Q.T).T
+    tmp = np.eye(n, dtype=R.dtype)
+    if X1:
+        # Compute X so that U'AX = C and V'BX = S
+        tmp[n-r:, n-r:] = la.inv(R)
+    else:
+        # Compute X so that A = UCX' and B = VCX'
+        tmp[n-r:, n-r:] = R.conj().T \
+            if R.dtype == np.complex128 else R.T
+    X = Q.dot(tmp)
 
-    # Sort and sub-sample if needed
-    rank = k + l
-    ix = np.argsort(C[:rank])[::-1]
-    C = C[ix]
-    S = S[ix]
-    if p < n:
-        # 0s and 1s should appear first. Remove these to get size p.
-        C = C[n-p:]
-        S = S[n-p:]
-    X[:, :rank] = X[:, ix]
-    if compute_uv[0]:
-        U[:, :rank] = U[:, ix]
-    if compute_uv[1]:
-        if p >= n:
-            # Handle rank-deficient inputs
-            if k:
-                V = np.roll(V, k, axis=1)
-            V[:, :rank] = V[:, ix]
-        else:
-            # Delete indices corresponding to C and S values that have been removed
-            # then renumber remaining indices starting from 0.
-            # Clunky -- should be a better way
-            ix2 = np.array([j-(n-p) for j in ix if j >= n-p])
-            if ix2.shape[0] > 0:
-                V = V[:, ix2]
-    if not full_matrices:
-        X = X[:, :rank]
+    # Sort and reduce if needed
+    if m >= n and p >= n:
+        ix = np.argsort(C[:n])[::-1]
+        C[:n] = C[:n][ix]
+        S[:n] = S[:n][ix]
+        X[:, :n] = X[:, ix]
+        if not full_matrices:
+            X = X[:, :n]
         if compute_uv[0]:
-            U = U[:, :rank]
+            U[:, :n] = U[:, ix]
+            if not full_matrices:
+                U = U[:, :n]
         if compute_uv[1]:
-            V = V[:, :rank]
+            V[:, :n] = V[:, ix]
+            if not full_matrices:
+                V = V[:, :n]
+    elif m >= n:
+        # Since p < n, we can't consistently sort more
+        # than p columns.  The first n-p columns will correspond
+        # to 1s in C or 0s in S -- they don't need to be sorted
+        # For C, S, X, V we can specify last p cols, but for U,
+        # we need to ensure the correct start column: n-p: n
+        ix = np.argsort(C[-p:])[::-1]
+        C[-p:] = C[-p:][ix]
+        S[-p:] = S[-p:][ix]
+        X[:, -p:] = X[:, -p:][:, ix]
+        if not full_matrices:
+            X = X[:, :n]
+        if compute_uv[0]:
+            U[:, n-p:n] = U[:, n-p:n][:, ix]
+            if not full_matrices:
+                U = U[:, :n]
+        if compute_uv[1]:
+            V = V[:, ix]
+    else:
+        # Since m < n, we can't consistently sort more
+        # than m columns.  The last n-m columns will correspond
+        # to 1s in C or 0s in S -- they don't need to be sorted
+        ix = np.argsort(C[:m])[::-1]
+        C[:m] = C[:m][ix]
+        S[:m] = S[:m][ix]
+        X[:, :m] = X[:, :m][:, ix]
+        if not full_matrices:
+            X = X[:, :n]
+        if compute_uv[0]:
+            U = U[:, ix]
+        if compute_uv[1]:
+            V[:, :m] = V[:, :m][:, ix]
+            if not full_matrices:
+                V = V[:, :n]
 
     outputs = (C, S, X) + tuple(arr for arr, compute in
-            zip((U, V), compute_uv) if compute)
+                                zip((U, V), compute_uv) if compute)
     return outputs
 
 
@@ -151,12 +202,12 @@ def _extract_R(A, B, k, l):
     ``http://www.netlib.org/lapack/explore-html/d1/d7e/group__double_g_esing_gab6c743f531c1b87922eb811cbc3ef645.html#gab6c743f531c1b87922eb811cbc3ef645``
     '''
     m, n = A.shape
-    if (m - k - l) >= 0:
-        R = np.zeros((k+l, n), dtype=A.dtype)
-        R[:, (n-k-l):] = A[:k+l, n-k-l:n]
+    r = k + l
+    # R should always have dimensions rxr
+    R = np.zeros((r, r), dtype=A.dtype)
+    if (m - r) >= 0:
+        R = A[:r, n-r:]
     else:
-        R = np.zeros((k + l, k + l), dtype=A.dtype)
-        R[:m, :] = A
-        R[m:, m:] = B[(m-k):l, (n+m-k-l):]
+        R[:m, :] = A[:, n-r:]
+        R[m:, m:] = B[(m-k):l, (n+m-r):]
     return R
-
