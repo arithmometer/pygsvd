@@ -65,23 +65,22 @@ def test_nonsquare_matrices_p_lt_n_lt_m():
     matrices = _load_matrices('nonsquare2')
     outputs = pygsvd.gsvd(matrices[0], matrices[1],
                           full_matrices=True, extras='uv')
-    max_size = matrices[0].shape[1]
+    m, n = matrices[0].shape
     p = matrices[1].shape[0]
     c, s, x, u, v = outputs
     for xin, xout in zip(matrices[2:4], (c, s)):
         assert np.allclose(np.abs(xin), np.abs(xout))
     for xin, xout in zip(matrices[4:], (x, u, v)):
-        assert np.allclose(np.abs(xin[:, :max_size]),
-                           np.abs(xout[:, :max_size]))
-    # Before we can do these product tests, we need to get c and s in the
-    # right dimensions for the product.  This is a bit clunky.
-    cc = np.ones(max_size)
-    cc[max_size-p:] = c
-    cc = np.diag(cc)
-    ss = np.zeros((p, max_size))
-    ss[:, max_size-p:] = np.diag(s)
-    assert np.allclose(u[:, :max_size].dot(cc).dot(x.T), matrices[0])
-    assert np.allclose(v[:, :max_size].dot(ss).dot(x.T), matrices[1])
+        assert np.allclose(np.abs(xin[:, :n]),
+                           np.abs(xout[:, :n]))
+    # Form matrices for c and s so we can reconstruct a and b
+    cc = np.zeros((m, n))
+    cc[:n, :] = np.diag(c[:n])
+    ss = np.zeros((p, n))
+    ss[:, n-p:] = np.diag(s[n-p:])
+    assert np.allclose(u.dot(cc).dot(x.T), matrices[0])
+    assert np.allclose(v.dot(ss).dot(x.T), matrices[1])
+
 
 def test_nonsquare_matrices_p_lt_n_m():
     '''Test that the correctness of the routine on non-square matrices
@@ -96,23 +95,20 @@ def test_nonsquare_matrices_p_lt_n_m():
     matrices = _load_matrices('nonsquare3')
     outputs = pygsvd.gsvd(matrices[0], matrices[1],
                           full_matrices=True, extras='uv')
-    max_size = matrices[0].shape[1]
+    m, n = matrices[0].shape
     p = matrices[1].shape[0]
     c, s, x, u, v = outputs
     for xin, xout in zip(matrices[2:4], (c, s)):
         assert np.allclose(np.abs(xin), np.abs(xout))
     for xin, xout in zip(matrices[4:], (x, u, v)):
-        assert np.allclose(np.abs(xin[:, :max_size]),
-                           np.abs(xout[:, :max_size]))
-    # Before we can do these product tests, we need to get c and s in the
-    # right dimensions for the product.  This is a bit clunky.
-    cc = np.ones(max_size)
-    cc[max_size-p:] = c
-    cc = np.diag(cc)
-    ss = np.zeros((p, max_size))
-    ss[:, max_size-p:] = np.diag(s)
-    assert np.allclose(u[:, :max_size].dot(cc).dot(x.T), matrices[0])
-    assert np.allclose(v[:, :max_size].dot(ss).dot(x.T), matrices[1])
+        assert np.allclose(np.abs(xin[:, :n]),
+                           np.abs(xout[:, :n]))
+    # Form matrices for c and s so we can reconstruct a and b
+    cc = np.diag(c)
+    ss = np.zeros((p, n))
+    ss[:, n-p:] = np.diag(s[n-p:])
+    assert np.allclose(u.dot(cc).dot(x.T), matrices[0])
+    assert np.allclose(v.dot(ss).dot(x.T), matrices[1])
 
 
 def test_nonsquare_matrices_p_lt_n_eq_m():
@@ -126,28 +122,42 @@ def test_nonsquare_matrices_p_lt_n_eq_m():
     It also verifies the reconstruction
     '''
     n = 22
-    L=.45
+    L = .45
     power = 10
     c = np.zeros(n)
     c[:2] = [1-2*L, L]
     a = la.matrix_power(sla.toeplitz(c), power)  # n x n blur array
     o = np.ones(n)
-    b = (np.zeros((n, n)) - np.diag(o) + np.diag(o[:n-1], 1))[:n-1,:]
-    outputs = pygsvd.gsvd(a,b,
+    b = (np.zeros((n, n)) - np.diag(o) + np.diag(o[:n-1], 1))[:n-1, :]
+    outputs = pygsvd.gsvd(a, b,
                           full_matrices=True, extras='uv')
-    max_size = a.shape[1]
+    m, n = a.shape
     p = b.shape[0]
     c, s, x, u, v = outputs
-    # Before we can do these product tests, we need to get c and s in the
-    # right dimensions for the product.  This is a bit clunky.
-    cc = np.ones(max_size)
-    cc[max_size-p:] = c
+    # Form matrices for c and s so we can reconstruct a and b
+    cc = np.ones(n)
+    cc[n-p:] = c[1:]
     cc = np.diag(cc)
-    ss = np.zeros((p, max_size))
-    ss[:, max_size-p:] = np.diag(s)
-    assert np.allclose(u[:, :max_size].dot(cc).dot(x.T), a)
-    assert np.allclose(v[:, :max_size].dot(ss).dot(x.T), b)
+    ss = np.zeros((p, n))
+    ss[:, n-p:] = np.diag(s[1:])
+    assert np.allclose(u.dot(cc).dot(x.T), a)
+    assert np.allclose(v.dot(ss).dot(x.T), b)
 
+
+def test_A_short_B_square():
+    '''Test the case: bnaeker/pygsvd - issue #5
+       opened on Nov 13, 2018
+       where ``a`` is a short matrix and ``b`` is square
+    '''
+    m, n, p = 4, 15, 15
+    a = np.random.poisson(1, (m, n))
+    b = np.random.poisson(1, (p, n))
+    C, S, X, U, V = pygsvd.gsvd(a, b, extras='uv')
+    CC = np.zeros((m, n))
+    CC[:, :m] = np.diag(C[:m])
+
+    assert np.allclose(U.dot(CC).dot(X.T), a)
+    assert np.allclose(V.dot(np.diag(S)).dot(X.T), b)
 
 
 def test_rank_deficient_matrices():
