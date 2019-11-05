@@ -10,13 +10,13 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
 
     The GSVD is defined as a joint decomposition, as follows.
 
-        A = U*C*X.T
-        B = V*S*X.T
+        A = U*C*X.T   C = U.T*A*inv(X.T)
+        B = V*S*X.T   S = V.T*B*inv(X.T)
 
-        or
+        or letting X1 = inv(X.T)
 
-        A = U*C*inv(X1)
-        B = V*S*inv(X1)
+        A = U*C*inv(X1)  C = U.T*A*X1
+        B = V*S*inv(X1)  S = V.T*B*X1
 
     where
 
@@ -42,7 +42,7 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
         matrix is to be computed.
     X1 : bool, optional
         If ``True``, X inverse transpose is returned in place of the
-        default X matrix.  This may be useful for regularization
+        default X matrix.  This may be convenient for regularization
         routines.  This matrix satisfies U.T@A@X = C, V.T@B@X = S.
 
     Returns
@@ -69,9 +69,6 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
     A ValueError is raised if ``A`` and ``B`` do not have the same
     number of columns, or if they are not both 2D (1D input arrays
     will be promoted).
-
-    A ValueError is raised if (A.T, B.T).T does not have full column rank.
-    This is due to complexities of sorting and may be removed later.
 
     A RuntimeError is raised if the underlying LAPACK routine fails.
 
@@ -118,14 +115,6 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
     # r is the rank of (A.T, B.T)
     # l is the rank of B
     r = k + l
-    if r < n:
-        print('''Warning: This code currently assumes rank(A.T, B.T)=n''')
-    if l != min(p, n):
-        print('''Warning: This code currently assumes the rank of B to be
-                 the minimum of its rows and columns''')
-    if la.matrix_rank(A) != min(m, n):
-        print('''Warning: This code currently assumes the rank of A to be
-                 the minimum of its rows and columns''')
     R = _extract_R(Ac, Bc, k, l)
     tmp = np.eye(n, dtype=R.dtype)
     if X1:
@@ -137,56 +126,40 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
             if R.dtype == np.complex128 else R.T
     X = Q.dot(tmp)
 
-    # Sort and reduce if needed
-    if m >= n and p >= n:
-        ix = np.argsort(C[:n])[::-1]
-        C[:n] = C[:n][ix]
-        S[:n] = S[:n][ix]
-        X[:, :n] = X[:, ix]
-        if not full_matrices:
-            X = X[:, :n]
+    # Sort and reduce as needed
+    if m - r >= 0:
+        ix = np.argsort(C[k:r])[::-1] # sort l values
+        X[:, -l:] = X[:, -l:][:, ix]
         if compute_uv[0]:
-            U[:, :n] = U[:, ix]
-            if not full_matrices:
-                U = U[:, :n]
+            U[:, k:k+l] = U[:, k:k+l][:, ix]
         if compute_uv[1]:
-            V[:, :n] = V[:, ix]
-            if not full_matrices:
-                V = V[:, :n]
-    elif m >= n:
-        # Since p < n, we can't consistently sort more
-        # than p columns.  The first n-p columns will correspond
-        # to 1s in C or 0s in S -- they don't need to be sorted
-        # For C, S, X, V we can specify last p cols, but for U,
-        # we need to ensure the correct start column: n-p: n
-        ix = np.argsort(C[-p:])[::-1]
-        C[-p:] = C[-p:][ix]
-        S[-p:] = S[-p:][ix]
-        X[:, -p:] = X[:, -p:][:, ix]
-        if not full_matrices:
-            X = X[:, :n]
+            V[:, :l] = V[:, :l][:, ix]
+        C[k:r] = C[k:r][ix]
+        S[k:r] = S[k:r][ix]
+    else:  # m - r < 0
+        ix = np.argsort(C[k:m])[::-1]
+        X[:, n-l:n+m-r] = X[:, n-l:n+m-r][:, ix]
         if compute_uv[0]:
-            U[:, n-p:n] = U[:, n-p:n][:, ix]
-            if not full_matrices:
-                U = U[:, :n]
+            U[:, -k:] = U[:, -k:][:, ix]
         if compute_uv[1]:
-            V = V[:, ix]
-    else:
-        # Since m < n, we can't consistently sort more
-        # than m columns.  The last n-m columns will correspond
-        # to 1s in C or 0s in S -- they don't need to be sorted
-        ix = np.argsort(C[:m])[::-1]
-        C[:m] = C[:m][ix]
-        S[:m] = S[:m][ix]
-        X[:, :m] = X[:, :m][:, ix]
-        if not full_matrices:
-            X = X[:, :n]
-        if compute_uv[0]:
-            U = U[:, ix]
-        if compute_uv[1]:
-            V[:, :m] = V[:, :m][:, ix]
-            if not full_matrices:
-                V = V[:, :n]
+            V[:, :m-k] = V[:, :m-k][:, ix]
+        C[k:m] = C[k:m][ix]
+        S[k:m] = S[k:m][ix]
+
+    # For convenience, move sv's to diagonal in non-full rank cases
+    if n-r > 0:
+        X = np.roll(X, r-n, axis=1)
+    if k > 0 and p >= r:
+        V = np.roll(V, k, axis=1)
+    if not full_matrices:
+        X = X[:, n-r:]
+        if compute_uv[0] and m > r:
+            U = U[:, :r]
+        if compute_uv[1] and p > r:
+            V = V[:,:r]
+
+    C = C[:r]
+    S = S[:r]
 
     outputs = (C, S, X) + tuple(arr for arr, compute in
                                 zip((U, V), compute_uv) if compute)
