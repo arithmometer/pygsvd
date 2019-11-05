@@ -2,20 +2,16 @@
 
 A Python wrapper to the LAPACK generalized singular value decomposition.
 
-This code is based heavily on the code by
+This code is based heavily on the original wrapper code by
 
 (C) 2017 Benjamin Naecker bnaecker@fastmail.com
 
-but the focus is generating correct results for all cases of
-nonsquare A and B matrices.  It cannot currently compute the GSVD
-when rank deficiency issues, such as a zero row in a square A or B,
-or a column duplicated in both A and B, are present.  It gives a
-warning if the rank of A or B is not its minimum dimension.  It also
-warns if the combined matrix (A.T, B.T).T does not have full column
-rank.  It maintains the sort order of the singular values of the
-original code by Benjamin Neacker, opposite to the convention in
-Matlab, and adds an option to return the inverse transpose of X
-instead of X as defined below.
+But this code generates correct results for *all* tested cases of nonsquare A
+and B matrices, including cases where arrays contain zero rows or columns.
+More tests will be added soon.  It maintains the sort order of the singular
+values of the original code by Benjamin Neacker, opposite to the convention in
+Matlab, and also adds an option to return the inverse transpose of X instead of
+X as defined below.
 
 ## Overview
 
