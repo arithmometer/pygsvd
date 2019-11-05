@@ -75,7 +75,7 @@ def test_nonsquare_matrices_p_lt_n_lt_m():
                            np.abs(xout[:, :n]))
     # Form matrices for c and s so we can reconstruct a and b
     cc = np.zeros((m, n))
-    cc[:n, :] = np.diag(c[:n])
+    cc[:n, :n] = np.diag(c)
     ss = np.zeros((p, n))
     ss[:, n-p:] = np.diag(s[n-p:])
     assert np.allclose(u.dot(cc).dot(x.T), matrices[0])
