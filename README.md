@@ -78,8 +78,8 @@ By default, the matrices `u` and `v`, if returned, are of shape `(m, n)` and
 `(p, n)`. Using the optional argument `full_matrices` is set to `True`, then
 the matrices are square, of shape `(m, m)` and `(p, p)`.
 
-For some purposes, it may be convenient to have the inverse transpose of X
-instead of X as defined below.  If the optional argument `X1` is set to `True`,
+For some purposes, it may be convenient to have the inverse transpose of `X`
+instead of `X` as defined below.  If the optional argument `X1` is set to `True`,
 this matrix is returned in place of the original `X` matrix.
 
 ## The generalized singular value decomposition
