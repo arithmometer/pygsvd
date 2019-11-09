@@ -8,7 +8,7 @@ This code is based heavily on the original wrapper code by
 
 This code generates correct results for *all* tested cases of nonsquare A and
 B matrices, including rank-deficient cases where arrays contain zero rows or
-columns.  Comprehensive test coverage includes approximately 250 tests.  It
+columns.  Comprehensive test coverage includes approximately 200 tests.  It
 maintains the descending order of the generalized singular values as in the
 original wrapper code by Benjamin Neacker, which is consistent with the
 regular SVD, but opposite to the GSVD convention in Matlab.
