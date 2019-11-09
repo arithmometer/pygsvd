@@ -20,7 +20,6 @@ def test_many():
         assert matrix_rank(B) == s.l, msg
         assert matrix_rank(vstack((A, B))) == s.r, msg
         assert s.q == s.m + s.p, msg
-        assert s.m + s.p >= s.n, msg
         CC = U.T@A@X
         if s.m < s.r:
             CCd = zeros(s.r)
