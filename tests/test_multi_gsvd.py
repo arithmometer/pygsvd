@@ -1,17 +1,51 @@
 from types import SimpleNamespace
 from numpy.random import rand
 from numpy.linalg import matrix_rank
-from numpy import allclose, vstack, diag
+from numpy import allclose, vstack, diag, zeros
 from pygsvd import gsvd
 import numpy as np
 np.set_printoptions(suppress=True)
 
+
 def test_many():
-    with open('cases1.txt','r') as f:
+    """
+    Reads a list of test cases from text file and tests
+    the GSVD result for both the full and reduced matrices cases
+    """
+    def check_case(full_matrices=False):
+        """
+        Checks a single case
+        """
+        C, S, X, U, V = gsvd(A, B, X1=True, full_matrices=True)
+        assert matrix_rank(B) == s.l, msg
+        assert matrix_rank(vstack((A, B))) == s.r, msg
+        assert s.q == s.m + s.p, msg
+        assert s.m + s.p >= s.n, msg
+        CC = U.T@A@X
+        if s.m < s.r:
+            CCd = zeros(s.r)
+            CCd[:s.m] = diag(CC)
+        else:
+            CCd = diag(CC)
+            CCd = CCd[:s.r]
+        assert CCd.shape == C.shape, msg
+        assert allclose(CCd, C), msg
+        SS = V.T@B@X
+        k = s.r-s.l
+        if k > 0 and s.p < s.r:
+            SSd1 = diag(SS, k)
+            SSd = zeros(s.r)
+            SSd[k:] = SSd1[:s.r-k]
+        else:
+            SSd = diag(SS)
+            SSd = SSd[:s.r]
+        assert SSd.shape == S.shape, msg
+        assert allclose(SSd, S), msg
+
+    with open('cases.txt', 'r') as f:
         s = f.read()
         lines = s.strip().split('\n')
         cases = [l.strip().split('#') for l in lines]
-        # each case should have a label and some assignments
         labels, assignments = zip(*cases)
         assignments = [a.strip().split(',') for a in assignments]
         assign_dicts = []
@@ -19,39 +53,29 @@ def test_many():
             d = {}
             for itm in lst:
                 k, v = itm.strip().split('=')
-                d[k]=int(v)
+                d[k] = int(v)
             assign_dicts.append(d)
-
     test_items = zip(labels, assign_dicts)
 
     for label, d in test_items:
         s = SimpleNamespace(**d)
+        msg = label + ' m={}, n={}, p={}, l={}, r={}' \
+            .format(s.m, s.n, s.p, s.l, s.r)
         A = rand(s.m, s.n)
         B = rand(s.p, s.n)
-        diff = min([s.n, s.p]) - s.l
+        # Ensure that the rank of AB = s.r by zeroing columns as needed
+        r = matrix_rank(vstack((A, B)))
+        i = 0
+        while r > s.r:
+            A[:, i] = 0
+            B[:, i] = 0
+            i += 1
+            r = matrix_rank(vstack((A, B)))
+        # Ensure that the rank of B = s.l by zeroing rows of B as needed
+        l = matrix_rank(B)
+        diff = l - s.l
         if diff > 0:
-            B[:diff,:] = 0
-        if s.r < s.n:
-            A[:, :s.n-s.r] = 0
-            B[:, :s.n-s.r] = 0
+            B[:diff, :] = 0
 
-        C,S,X,U,V = gsvd(A,B,X1=True, full_matrices=True)
-        # TODO: remove most or all of these once tests pass
-        assert matrix_rank(B)==s.l
-        assert matrix_rank(vstack((A,B))) == s.r
-        assert s.q == s.m + s.p
-        assert s.m + s.p >= s.n
-        CC = U.T@A@X
-        CCd = diag(CC)
-        lCCd = CCd.shape[0]
-        assert CC.shape == A.shape
-        assert allclose(CCd, C[:lCCd]), \
-            label + ' m={}, n={}, p={}, l={}, r={}' \
-                    .format(s.m, s.n, s.p, s.l, s.r)
-        SS = V.T@B@X
-        SSd = diag(SS)
-        lSSd = SSd.shape[0]
-        assert CC.shape == A.shape
-        assert allclose(SSd, S[:lSSd]), \
-            label + ' m={}, n={}, p={}, l={}, r={}' \
-                    .format(s.m, s.n, s.p, s.l, s.r)
+        check_case(full_matrices=True)
+        check_case(full_matrices=False)
