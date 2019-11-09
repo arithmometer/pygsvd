@@ -140,13 +140,15 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
         ix = np.argsort(C[k:m])[::-1]
         X[:, n-l:n+m-r] = X[:, n-l:n+m-r][:, ix]
         if compute_uv[0]:
-            U[:, -k:] = U[:, -k:][:, ix]
+            #U[:, -k:] = U[:, -k:][:, ix]
+            U[:, k:] = U[:, k:][:, ix]
         if compute_uv[1]:
             V[:, :m-k] = V[:, :m-k][:, ix]
         C[k:m] = C[k:m][ix]
         S[k:m] = S[k:m][ix]
 
-    # For convenience, move sv's to diagonal in non-full rank cases
+    # For convenience, try to move sv's to diagonal in non-full rank cases
+    # This may not always be possible.
     if n-r > 0:
         X = np.roll(X, r-n, axis=1)
     if k > 0 and p >= r:
@@ -156,7 +158,7 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
         if compute_uv[0] and m > r:
             U = U[:, :r]
         if compute_uv[1] and p > r:
-            V = V[:,:r]
+            V = V[:, :r]
 
     C = C[:r]
     S = S[:r]
