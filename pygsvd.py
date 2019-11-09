@@ -112,7 +112,7 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
     # Compute GSVD via LAPACK wrapper, returning the effective rank
     k, l = _gsvd.gsvd(Ac, Bc, U, V, Q, C, S, iwork,
                       compute_uv[0], compute_uv[1])
-    # r is the rank of (A.T, B.T)
+    # r is the rank of the matrix (A.T | B.T).T denoted A|B
     # l is the rank of B
     r = k + l
     R = _extract_R(Ac, Bc, k, l)
@@ -126,9 +126,10 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
             if R.dtype == np.complex128 else R.T
     X = Q.dot(tmp)
 
-    # Sort and reduce as needed
+    # Sort columns of X, U and V to achieve the correct ordering of
+    # the singular values.
     if m - r >= 0:
-        ix = np.argsort(C[k:r])[::-1] # sort l values
+        ix = np.argsort(C[k:r])[::-1]  # sort l values
         X[:, -l:] = X[:, -l:][:, ix]
         if compute_uv[0]:
             U[:, k:k+l] = U[:, k:k+l][:, ix]
@@ -137,7 +138,7 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
         C[k:r] = C[k:r][ix]
         S[k:r] = S[k:r][ix]
     else:  # m - r < 0
-        ix = np.argsort(C[k:m])[::-1]
+        ix = np.argsort(C[k:m])[::-1]  # sort m-k values
         X[:, n-l:n+m-r] = X[:, n-l:n+m-r][:, ix]
         if compute_uv[0]:
             U[:, k:] = U[:, k:][:, ix]
@@ -146,12 +147,15 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
         C[k:m] = C[k:m][ix]
         S[k:m] = S[k:m][ix]
 
-    # For convenience, try to move sv's to diagonal in non-full rank cases
-    # This may not always be possible.
+    # For convenience, try to move sv's to diagonal in non-full rank cases.
+    # This is not possible when the rank of AB exeeds the rank of B and
+    # the number of rows of B is less than the rank of A|B.
     if n-r > 0:
         X = np.roll(X, r-n, axis=1)
     if k > 0 and p >= r:
         V = np.roll(V, k, axis=1)
+    # If full matrices are not required, limit X, U, and V to at most r
+    # columns.
     if not full_matrices:
         X = X[:, :r]
         if compute_uv[0] and m > r:
