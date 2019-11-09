@@ -1,0 +1,318 @@
+m < l < p < r < n < q  # m=3, l=4, p=5, r=6, n=7, q=8
+m < l < p < r < n = q  # m=2, l=3, p=4, r=5, n=6, q=6
+m < l < p < r = n < q  # m=2, l=3, p=4, r=5, n=5, q=6
+m < l < p < r = n = q  # m=2, l=3, p=4, r=6, n=6, q=6
+m < l < p = r < n < q  # m=2, l=3, p=4, r=4, n=5, q=6
+m < l < p = r < n = q  # m=2, l=3, p=4, r=4, n=6, q=6
+m < l < p = r = n < q  # m=2, l=3, p=4, r=4, n=4, q=6
+m < l = p < r < n < q  # m=3, l=4, p=4, r=5, n=6, q=7
+m < l = p < r < n = q  # m=2, l=3, p=3, r=4, n=5, q=5
+m < l = p < r = n < q  # m=2, l=3, p=3, r=4, n=4, q=5
+m < l = p < r = n = q  # m=2, l=3, p=3, r=5, n=5, q=5
+m < l = p = r < n < q  # m=2, l=3, p=3, r=3, n=4, q=5
+m < l = p = r < n = q  # m=2, l=3, p=3, r=3, n=5, q=5
+m < l = p = r = n < q  # m=2, l=3, p=3, r=3, n=3, q=5
+m = l < p < r < n < q  # m=3, l=3, p=4, r=5, n=6, q=7
+m = l < p < r < n = q  # m=2, l=2, p=3, r=4, n=5, q=5
+m = l < p < r = n < q  # m=2, l=2, p=3, r=4, n=4, q=5
+m = l < p < r = n = q  # m=1, l=1, p=2, r=3, n=3, q=3
+m = l < p = r < n < q  # m=2, l=2, p=3, r=3, n=4, q=5
+m = l < p = r < n = q  # m=1, l=1, p=2, r=2, n=3, q=3
+m = l < p = r = n < q  # m=2, l=2, p=3, r=3, n=3, q=5
+m = l = p < r < n < q  # m=3, l=3, p=3, r=4, n=5, q=6
+m = l = p < r < n = q  # m=2, l=2, p=2, r=3, n=4, q=4
+m = l = p < r = n < q  # m=2, l=2, p=2, r=3, n=3, q=4
+m = l = p < r = n = q  # m=2, l=2, p=2, r=4, n=4, q=4
+m = l = p = r < n < q  # m=2, l=2, p=2, r=2, n=3, q=4
+m = l = p = r < n = q  # m=2, l=2, p=2, r=2, n=4, q=4
+m = l = p = r = n < q  # m=2, l=2, p=2, r=2, n=2, q=4
+m < l < r < p < n < q  # m=2, l=3, r=4, p=5, n=6, q=7
+m < l < r < p < n = q  # m=2, l=3, r=4, p=5, n=7, q=7
+m < l < r < p = n < q  # m=2, l=3, r=4, p=5, n=5, q=7
+m < l < r = p < n < q  # m=2, l=3, r=4, p=4, n=5, q=7
+m < l < r = p < n = q  # m=2, l=3, r=4, p=4, n=6, q=6
+m < l < r = p = n < q  # m=2, l=3, r=4, p=4, n=4, q=6
+m < l = r < p < n < q  # m=2, l=3, r=3, p=4, n=5, q=6
+m < l = r < p < n = q  # m=2, l=3, r=3, p=4, n=6, q=6
+m < l = r < p = n < q  # m=2, l=3, r=3, p=4, n=4, q=6
+m < l = r = p < n < q  # m=2, l=3, r=3, p=3, n=4, q=5
+m < l = r = p < n = q  # m=2, l=3, r=3, p=3, n=5, q=5
+m < l = r = p = n < q  # m=2, l=3, r=3, p=3, n=3, q=5
+m = l < r < p < n < q  # m=3, l=3, r=4, p=5, n=6, q=7
+m = l < r < p < n = q  # m=2, l=2, r=3, p=4, n=6, q=6
+m = l < r < p = n < q  # m=2, l=2, r=3, p=4, n=4, q=6
+m = l < r = p < n < q  # m=2, l=2, r=3, p=3, n=4, q=5
+m = l < r = p < n = q  # m=2, l=2, r=3, p=3, n=4, q=5
+m = l < r = p = n < q  # m=2, l=2, r=3, p=3, n=3, q=5
+m = l = r < p < n < q  # m=2, l=2, r=2, p=3, n=4, q=5
+m = l = r < p < n = q  # m=2, l=2, r=2, p=3, n=5, q=5
+m = l = r < p = n < q  # m=2, l=2, r=2, p=3, n=3, q=5
+m = l = r = p < n < q  # m=2, l=2, r=2, p=2, n=3, q=4
+m = l = r = p < n = q  # m=2, l=2, r=2, p=2, n=4, q=4
+m = l = r = p = n < q  # m=2, l=2, r=2, p=2, n=2, q=4
+m < l < r < n < p < q  # m=2, l=3, r=4, n=5, p=6, q=8
+m < l < r < n = p < q  # m=2, l=3, r=4, n=5, p=5, q=7
+m < l < r = n < p < q  # m=2, l=3, r=4, n=4, p=5, q=7
+m < l < r = n = p < q  # m=2, l=3, r=4, n=4, p=4, q=6
+m < l = r < n < p < q  # m=2, l=3, r=3, n=4, p=5, q=7
+m < l = r < n = p < q  # m=2, l=3, r=3, n=4, p=5, q=7
+m < l = r = n < p < q  # m=2, l=3, r=3, n=3, p=4, q=6
+m < l = r = n = p < q  # m=2, l=3, r=3, n=3, p=3, q=5
+m = l < r < n < p < q  # m=2, l=2, r=3, n=4, p=5, q=7
+m = l < r < n = p < q  # m=2, l=2, r=3, n=4, p=4, q=7
+m = l < r = n < p < q  # m=2, l=2, r=3, n=4, p=5, q=7
+m = l < r = n = p < q  # m=2, l=2, r=3, n=3, p=3, q=5
+m = l = r < n < p < q  # m=2, l=2, r=2, n=3, p=4, q=6
+m = l = r < n = p < q  # m=2, l=2, r=2, n=3, p=3, q=4
+m = l = r = n < p < q  # m=2, l=2, r=2, n=2, p=3, q=5
+m = l = r = n = p < q  # m=2, l=2, r=2, n=2, p=2, q=4
+l < m < p < r < n < q  # l=2, m=3, p=4, r=5, n=6, q=7
+l < m < p < r < n = q  # l=1, m=2, p=3, r=4, n=5, q=5
+l < m < p < r = n < q  # l=2, m=3, p=4, r=5, n=5, q=7
+l < m < p < r = n = q  # l=2, m=3, p=4, r=7, n=7, q=7
+l < m < p = r < n < q  # l=2, m=3, p=4, r=4, n=5, q=7
+l < m < p = r < n = q  # l=2, m=3, p=4, r=4, n=7, q=7
+l < m < p = r = n < q  # l=2, m=3, p=4, r=4, n=4, q=7
+l < m = p < r < n < q  # l=2, m=3, p=3, r=4, n=5, q=6
+l < m = p < r < n = q  # l=2, m=3, p=3, r=4, n=5, q=5
+l < m = p < r = n < q  # l=2, m=3, p=3, r=4, n=4, q=6
+l < m = p < r = n = q  # l=2, m=3, p=3, r=6, n=6, q=6
+l < m = p = r < n < q  # l=2, m=3, p=3, r=4, n=5, q=6
+l < m = p = r < n = q  # l=2, m=3, p=3, r=3, n=6, q=6
+l < m = p = r = n < q  # l=2, m=3, p=3, r=3, n=3, q=6
+l = m < p < r < n < q  # l=3, m=3, p=4, r=5, n=6, q=7
+l = m < p < r < n = q  # l=2, m=2, p=3, r=4, n=5, q=5
+l = m < p < r = n < q  # l=2, m=2, p=3, r=4, n=4, q=5
+l = m < p < r = n = q  # l=2, m=2, p=3, r=5, n=5, q=5
+l = m < p = r < n < q  # l=2, m=2, p=3, r=3, n=4, q=5
+l = m < p = r < n = q  # l=2, m=2, p=3, r=3, n=5, q=5
+l = m < p = r = n < q  # l=2, m=2, p=3, r=3, n=3, q=5
+l = m = p < r < n < q  # l=3, m=3, p=3, r=4, n=5, q=6
+l = m = p < r < n = q  # l=2, m=2, p=2, r=3, n=4, q=4
+l = m = p < r = n < q  # l=2, m=2, p=2, r=3, n=3, q=4
+l = m = p < r = n = q  # l=2, m=2, p=2, r=4, n=4, q=4
+l = m = p = r < n < q  # l=2, m=2, p=2, r=2, n=3, q=4
+l = m = p = r < n = q  # l=2, m=2, p=2, r=2, n=4, q=4
+l = m = p = r = n < q  # l=2, m=2, p=2, r=2, n=2, q=4
+l < m < r < p < n < q  # l=2, m=3, r=4, p=5, n=6, q=8
+l < m < r < p < n = q  # l=2, m=3, r=4, p=5, n=8, q=8
+l < m < r < p = n < q  # l=2, m=3, r=4, p=5, n=6, q=8
+l < m < r = p < n < q  # l=2, m=3, r=4, p=4, n=5, q=7
+l < m < r = p < n = q  # l=2, m=3, r=4, p=4, n=7, q=7
+l < m < r = p = n < q  # l=2, m=3, r=4, p=4, n=4, q=7
+l < m = r < p < n < q  # l=2, m=3, r=3, p=4, n=5, q=6
+l < m = r < p < n = q  # l=2, m=3, r=3, p=4, n=7, q=7
+l < m = r < p = n < q  # l=2, m=3, r=3, p=4, n=4, q=7
+l < m = r = p < n < q  # l=2, m=3, r=3, p=3, n=4, q=6
+l < m = r = p < n = q  # l=2, m=3, r=3, p=3, n=6, q=6
+l < m = r = p = n < q  # l=2, m=3, r=3, p=3, n=3, q=6
+l = m < r < p < n < q  # l=2, m=2, r=3, p=4, n=5, q=6
+l = m < r < p < n = q  # l=2, m=2, r=3, p=4, n=6, q=6
+l = m < r < p = n < q  # l=2, m=2, r=3, p=4, n=4, q=6
+l = m < r = p < n < q  # l=2, m=2, r=3, p=3, n=4, q=5
+l = m < r = p < n = q  # l=2, m=2, r=3, p=3, n=5, q=5
+l = m < r = p = n < q  # l=2, m=2, r=3, p=3, n=3, q=5
+l = m = r < p < n < q  # l=2, m=2, r=2, p=3, n=4, q=5
+l = m = r < p < n = q  # l=2, m=2, r=2, p=3, n=5, q=5
+l = m = r < p = n < q  # l=2, m=2, r=2, p=3, n=3, q=5
+l = m = r = p < n < q  # l=2, m=2, r=2, p=2, n=3, q=4
+l = m = r = p < n = q  # l=2, m=2, r=2, p=2, n=4, q=4
+l = m = r = p = n < q  # l=2, m=2, r=2, p=2, n=2, q=4
+l < m < r < n < p < q  # l=2, m=2, r=4, n=5, p=6, q=8
+l < m < r < n = p < q  # l=2, m=3, r=4, n=5, p=5, q=8
+l < m < r = n < p < q  # l=2, m=3, r=4, n=4, p=5, q=8
+l < m < r = n = p < q  # l=2, m=3, r=4, n=4, p=4, q=7
+l < m = r < n < p < q  # l=2, m=3, r=3, n=4, p=5, q=8
+l < m = r < n = p < q  # l=2, m=3, r=3, n=4, p=4, q=7
+l < m = r = n < p < q  # l=2, m=3, r=3, n=3, p=4, q=7
+l < m = r = n = p < q  # l=2, m=3, r=3, n=3, p=3, q=6
+l = m < r < n < p < q  # l=2, m=2, r=3, n=4, p=5, q=7
+l = m < r < n < p < q
+l = m < r < n = p < q
+l = m < r = n < p < q
+l = m < r = n = p < q
+l = m = r < n < p < q
+l = m = r < n = p < q
+l = m = r = n < p < q
+l = m = r = n = p < q
+l < p < m < r < n < q
+l < p < m < r < n = q
+l < p < m < r = n < q
+l < p < m < r = n = q
+l < p < m = r < n < q
+l < p < m = r < n = q
+l < p < m = r = n < q
+l < p = m < r < n < q
+l < p = m < r < n = q
+l < p = m < r = n < q
+l < p = m < r = n = q
+l < p = m = r < n < q
+l < p = m = r < n = q
+l < p = m = r = n < q
+l = p < m < r < n < q
+l = p < m < r < n = q
+l = p < m < r = n < q
+l = p < m < r = n = q
+l = p < m = r < n < q
+l = p < m = r < n = q
+l = p < m = r = n < q
+l = p = m < r < n < q
+l = p = m < r < n = q
+l = p = m < r = n < q
+l = p = m < r = n = q
+l = p = m = r < n < q
+l = p = m = r < n = q
+l = p = m = r = n < q
+l = p = m = r = n = q
+l < p < r < m < n < q
+l < p < r < m < n = q
+l < p < r < m = n < q
+l < p < r = m < n < q
+l < p < r = m < n = q
+l < p < r = m = n < q
+l < p = r < m < n < q
+l < p = r < m < n = q
+l < p = r < m = n < q
+l < p = r = m < n < q
+l < p = r = m < n = q
+l < p = r = m = n < q
+l = p < r < m < n < q
+l = p < r < m < n = q
+l = p < r < m = n < q
+l = p < r = m < n < q
+l = p < r = m < n = q
+l = p < r = m = n < q
+l = p = r < m < n < q
+l = p = r < m < n = q
+l = p = r < m = n < q
+l = p = r = m < n < q
+l = p = r = m < n = q
+l = p = r = m = n < q
+l = p = r = m = n = q
+l < p < r < n < m < q
+l < p < r < n = m < q
+l < p < r = n < m < q
+l < p < r = n = m < q
+l < p = r < n < m < q
+l < p = r < n = m < q
+l < p = r = n < m < q
+l < p = r = n = m < q
+l = p < r < n < m < q
+l = p < r < n = m < q
+l = p < r = n < m < q
+l = p < r = n = m < q
+l = p = r < n < m < q
+l = p = r < n = m < q
+l = p = r = n < m < q
+l = p = r = n = m < q
+l < r < m < p < n < q
+l < r < m < p < n = q
+l < r < m < p = n < q
+l < r < m = p < n < q
+l < r < m = p < n = q
+l < r < m = p = n < q
+l < r = m < p < n < q
+l < r = m < p < n = q
+l < r = m < p = n < q
+l < r = m = p < n < q
+l < r = m = p < n = q
+l < r = m = p = n < q
+l = r < m < p < n < q
+l = r < m < p < n = q
+l = r < m < p = n < q
+l = r < m = p < n < q
+l = r < m = p < n = q
+l = r < m = p = n < q
+l = r = m < p < n < q
+l = r = m < p < n = q
+l = r = m < p = n < q
+l = r = m = p < n < q
+l = r = m = p < n = q
+l = r = m = p = n < q
+l < r < m < n < p < q
+l < r < m < n = p < q
+l < r < m = n < p < q
+l < r < m = n = p < q
+l < r = m < n < p < q
+l < r = m < n = p < q
+l < r = m = n < p < q
+l < r = m = n = p < q
+l = r < m < n < p < q
+l = r < m < n = p < q
+l = r < m = n < p < q
+l = r < m = n = p < q
+l = r = m < n < p < q
+l = r = m < n = p < q
+l = r = m = n < p < q
+l = r = m = n = p < q
+l < r < p < m < n < q
+l < r < p < m < n = q
+l < r < p < m = n < q
+l < r < p = m < n < q
+l < r < p = m < n = q
+l < r < p = m = n < q
+l < r = p < m < n < q
+l < r = p < m < n = q
+l < r = p < m = n < q
+l < r = p = m < n < q
+l < r = p = m < n = q
+l < r = p = m = n < q
+l = r < p < m < n < q
+l = r < p < m < n = q
+l = r < p < m = n < q
+l = r < p = m < n < q
+l = r < p = m < n = q
+l = r < p = m = n < q
+l = r = p < m < n < q
+l = r = p < m < n = q
+l = r = p < m = n < q
+l = r = p = m < n < q
+l = r = p = m < n = q
+l = r = p = m = n < q
+l < r < p < n < m < q
+l < r < p < n = m < q
+l < r < p = n < m < q
+l < r < p = n = m < q
+l < r = p < n = m < q
+l < r = p = n < m < q
+l < r = p = n = m < q
+l = r < p < n < m < q
+l = r < p < n = m < q
+l = r < p = n < m < q
+l = r < p = n = m < q
+l = r = p < n < m < q
+l = r = p < n = m < q
+l = r = p = n < m < q
+l = r = p = n = m < q
+l < r < n < m < p < q
+l < r < n < m = p < q
+l < r < n = m < p < q
+l < r < n = m = p < q
+l < r = n < m < p < q
+l < r = n < m = p < q
+l < r = n = m < p < q
+l < r = n = m = p < q
+l = r < n < m < p < q
+l = r < n < m = p < q
+l = r < n = m < p < q
+l = r < n = m = p < q
+l = r = n < m < p < q
+l = r = n < m = p < q
+l = r = n = m < p < q
+l = r = n = m = p < q
+l < r < n < p < m < q
+l < r < n < p = m < q
+l < r < n = p < m < q
+l < r < n = p = m < q
+l < r = n < p < m < q
+l < r = n < p = m < q
+l < r = n = p < m < q
+l < r = n = p = m < q
+l = r < n < p < m < q
+l = r < n < p = m < q
+l = r < n = p < m < q
+l = r < n = p = m < q
+l = r = n < p < m < q
+l = r = n < p = m < q
+l = r = n = p < m < q
+l = r = n = p = m < q
