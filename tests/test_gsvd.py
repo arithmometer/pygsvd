@@ -228,8 +228,9 @@ def test_non_full_matrices():
 def test_return_extras():
     '''Verify that the extra arrays are returned as expected.'''
     names = ('a', 'b', 'c', 's', 'x', 'u', 'v')
+    path = os.path.join(os.path.dirname(__file__), 'square/{}.txt')
     matrices = dict(zip(names,
-                        map(np.loadtxt, ('square/{}.txt'.format(name)
+                        map(np.loadtxt, (path.format(name)
                                          for name in names))))
     extras = 'uv'
 
@@ -258,8 +259,9 @@ def test_complex():
     values are always real, but the returned matrices should be complex
     as well.
     '''
-    a = np.loadtxt('square/a.txt')
-    b = np.loadtxt('square/b.txt').astype(np.complex)
+    path = os.path.join(os.path.dirname(__file__), 'square/{}.txt')
+    a = np.loadtxt(path.format('a'))
+    b = np.loadtxt(path.format('b')).astype(np.complex)
     c, s, x, u, v = pygsvd.gsvd(a, b, full_matrices=True, extras='uv')
     assert c.dtype == np.double  # Singular values are always real
     assert s.dtype == np.double  # Singular values are always real
