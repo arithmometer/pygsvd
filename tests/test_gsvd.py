@@ -126,7 +126,9 @@ def test_nonsquare_matrices_p_lt_n_eq_m():
     power = 10
     c = np.zeros(n)
     c[:2] = [1-2*L, L]
-    a = la.matrix_power(sla.toeplitz(c), power)  # n x n blur array
+    d = np.ones(n)
+    a = np.diag(d*(1-2*L)) + np.diag(d[:-1]*L, 1) + np.diag(d[:-1]*L, -1)
+    a = la.matrix_power(a, power)  # n x n blur array
     o = np.ones(n)
     b = (np.zeros((n, n)) - np.diag(o) + np.diag(o[:n-1], 1))[:n-1, :]
     outputs = pygsvd.gsvd(a, b,
