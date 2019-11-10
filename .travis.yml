@@ -11,7 +11,7 @@ addons:
         update: true
         packages:
             - liblapack-dev
-            - liblapack3-dev
+            - liblapacke-dev
 
 install:
     - ls /usr/include/*.h
