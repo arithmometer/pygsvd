@@ -6,12 +6,16 @@ This code is based heavily on the original wrapper code by
 
 (C) 2017 Benjamin Naecker bnaecker@fastmail.com
 
-This code generates correct results for *all* tested cases of nonsquare A and
+This code generates correct results for all tested cases of nonsquare A and
 B matrices, including rank-deficient cases where arrays contain zero rows or
-columns.  Comprehensive test coverage includes approximately 200 tests.  It
-maintains the descending order of the generalized singular values as in the
-original wrapper code by Benjamin Neacker, which is consistent with the
-regular SVD, but opposite to the GSVD convention in Matlab.
+columns.  Test cases attempt to cover all possible configurations relating
+row and column dimensions, the rank of B and the rank of the matrix formed 
+by stacking A above B.
+
+The descending order of the generalized singular values in the
+original wrapper code by Benjamin Neacker is preserved; this ordering
+is consistent with that of the regular SVD, but opposite to the GSVD
+convention in Matlab.
 
 An option was added to return the inverse transpose of X instead of X.  This
 is discussed in more detail below.
