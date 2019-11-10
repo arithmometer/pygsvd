@@ -22,7 +22,7 @@ def test_many():
         assert s.q == s.m + s.p, msg
         if full_matrices == True:
             assert matrix_rank(X) == s.n, msg
-        CC = U.T@A@X
+        CC = U.T.dot(A).dot(X)
         if s.m < s.r:
             CCd = zeros(s.r)
             CCd[:s.m] = diag(CC)
@@ -31,7 +31,7 @@ def test_many():
             CCd = CCd[:s.r]
         assert CCd.shape == C.shape, msg
         assert allclose(CCd, C), msg
-        SS = V.T@B@X
+        SS = V.T.dot(B).dot(X)
         k = s.r-s.l
         if k > 0 and s.p < s.r:
             SSd1 = diag(SS, k)
