@@ -1,6 +1,8 @@
-os:
-    - linux
-    - osx
+os: linux
+
+dist:
+    - xenial
+    - bionic
 
 language: python
 
