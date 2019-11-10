@@ -12,7 +12,7 @@ addons:
         packages: liblapack-dev
 
 install:
-    - find / -name lapacke.h  2>&1 | grep -v "Permission denied"
+    - find /home/travis/ -name lapacke.h  2>&1 | grep -v "Permission denied"
     - pip install -r requirements.txt
     - travis_retry python setup.py install
 
