@@ -4,11 +4,12 @@ import pygsvd
 import numpy as np
 import pytest
 import numpy.linalg as la
-
+import os
 
 def _load_matrices(mattype):
+    path = os.path.join(os.path.dirname(__file__), '{}/{}.txt')
     return tuple(map(np.loadtxt,
-                     ('{}/{}.txt'.format(mattype, x) for x in
+                     (path.format(mattype, x) for x in
                       ('a', 'b', 'c', 's', 'x', 'u', 'v'))))
 
 

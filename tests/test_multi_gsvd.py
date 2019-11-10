@@ -1,4 +1,6 @@
+import os
 from types import SimpleNamespace
+
 from numpy.random import rand
 from numpy.linalg import matrix_rank
 from numpy import allclose, vstack, diag, zeros
@@ -43,7 +45,8 @@ def test_many():
         assert SSd.shape == S.shape, msg
         assert allclose(SSd, S), msg
 
-    with open('cases.txt', 'r') as f:
+    path = os.path.join(os.path.dirname(__file__), 'cases.txt')
+    with open(path, 'r') as f:
         s = f.read()
         lines = s.strip().split('\n')
         cases = [l.strip().split('#') for l in lines]
