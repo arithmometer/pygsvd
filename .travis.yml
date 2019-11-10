@@ -14,7 +14,6 @@ addons:
             - liblapacke-dev
 
 install:
-    - ls /usr/include/*.h
     - pip install -r requirements.txt
     - travis_retry python setup.py install
 

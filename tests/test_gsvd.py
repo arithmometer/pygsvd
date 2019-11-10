@@ -4,7 +4,6 @@ import pygsvd
 import numpy as np
 import pytest
 import numpy.linalg as la
-import scipy.linalg as sla
 
 
 def _load_matrices(mattype):
