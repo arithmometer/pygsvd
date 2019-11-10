@@ -1,10 +1,10 @@
-os: linux
+os:
+    - linux
+    - osx
 
 language: python
 
-python:
-    - "2.7"
-    - "3.6"
+python: "3.6"
 
 addons:
     apt:
