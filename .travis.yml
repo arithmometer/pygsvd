@@ -9,7 +9,9 @@ python:
 addons:
     apt:
         update: true
-        packages: liblapack-dev
+        packages:
+            - liblapack-dev
+            - liblapack3-dev
 
 install:
     - ls /usr/include/*.h
