@@ -147,9 +147,10 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
         C[k:m] = C[k:m][ix]
         S[k:m] = S[k:m][ix]
 
-    # For convenience, try to move sv's to diagonal in non-full rank cases.
-    # This is not possible when the rank of AB exeeds the rank of B and
-    # the number of rows of B is less than the rank of A|B.
+    # For convenience in reconstructing A and B from their decompositions,
+    # try to move SV's to the diagonal in cases when rank(A|B) < n.
+    # This is not possible if rank(A|B) > rank(B) and
+    # the number of rows of B is less than rank(A|B).
     if n-r > 0:
         X = np.roll(X, r-n, axis=1)
     if k > 0 and p >= r:
