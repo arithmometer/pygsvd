@@ -6,15 +6,29 @@ jobs:
     include:
       - name: "Python 3.6 on xenial"
         dist: xenial
+        addons:
+            apt:
+                update: true
+                packages:
+                    - liblapack-dev
+                    - liblapacke-dev
+
       - name: "Python 3.6 on bionic"
         dist: bionic
+        addons:
+            apt:
+                update: true
+                packages:
+                    - liblapack-dev
+                    - liblapacke-dev
 
-addons:
-    apt:
-        update: true
-        packages:
-            - liblapack-dev
-            - liblapacke-dev
+      - name: "Python 3.7.4 on macOS 10.14.4"
+        os: osx
+        osx_image: xcode11.2
+        languate: shell
+        addons:
+            brew:
+                packages: lapack
 
 install:
     - pip install -r requirements.txt
