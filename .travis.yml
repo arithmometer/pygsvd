@@ -1,5 +1,5 @@
+os: linux
 language: python
-
 python: "3.6"
 
 jobs:
@@ -25,9 +25,9 @@ jobs:
       - name: "Python 3.7.4 on macOS 10.14.4"
         os: osx
         osx_image: xcode11.2
-        languate: shell
+        language: shell
         addons:
-            brew:
+            homebrew:
                 packages: lapack
 
 install:
