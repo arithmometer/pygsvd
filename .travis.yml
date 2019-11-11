@@ -1,12 +1,13 @@
-os: linux
-
-dist:
-    - xenial
-    - bionic
-
 language: python
 
 python: "3.6"
+
+jobs:
+    include:
+      - name: "Python 3.6 on xenial"
+        dist: xenial
+      - name: "Python 3.6 on bionic"
+        dist: bionic
 
 addons:
     apt:
