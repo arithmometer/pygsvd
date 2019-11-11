@@ -31,7 +31,8 @@ jobs:
                 packages: lapack
 
 install:
-    - pip3 install -r requirements.txt
+    - pip3 install --user -r requirements.txt
+    - pip3 install --user pytest
     - travis_retry python3 setup.py install
 
 script: pytest
