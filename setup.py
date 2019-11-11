@@ -4,14 +4,16 @@ import numpy as np
 
 define_args = '-DBUILD_WITH_PYTHON3' if sys.version.startswith('3') else ''
 gsvd_extension = Extension(
-                    '_gsvd', 
+                    '_gsvd',
                     ['src/_gsvd.c'],
                     include_dirs=[
-                            np.get_include(), 
-                            '/usr/local/include'
+                            np.get_include(),
+                            '/usr/local/include',
+                            '/usr/local/opt/lapack/include'
                         ],
                     library_dirs=[
-                            '/usr/local/lib'
+                            '/usr/local/lib',
+                            '/usr/local/opt/lapack/lib'
                             ],
                     libraries=['lapacke'],
                     extra_compile_args = [define_args])
@@ -46,4 +48,4 @@ setup(
         license='GNU Public License v3',
         py_modules=['pygsvd'],
     )
-        
+
