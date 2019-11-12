@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.linalg as la
-from scipy.linalg.lapack import dtrtri, ctrtri
+from scipy.linalg.lapack import dtrtri, ztrtri
 import _gsvd
 
 
