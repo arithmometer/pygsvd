@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.linalg as la
+from scipy.linalg.lapack import dtrtri, ctrtri
 import _gsvd
 
 
@@ -119,7 +120,9 @@ def gsvd(A, B, full_matrices=False, extras='uv', X1=False):
     tmp = np.eye(n, dtype=R.dtype)
     if X1:
         # Compute X so that U'AX = C and V'BX = S
-        tmp[n-r:, n-r:] = la.inv(R)
+        # invert R by back substitution
+        tmp[n-r:, n-r:] = ztrtri(R, overwrite_c=1)[0] \
+            if R.dtype == np.complex128 else dtrtri(R, overwrite_c=1)[0]
     else:
         # Compute X so that A = UCX' and B = VCX'
         tmp[n-r:, n-r:] = R.conj().T \
