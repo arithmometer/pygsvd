@@ -271,6 +271,27 @@ def test_complex():
     assert np.allclose(v.dot(np.diag(s)).dot(x.T.conj()), b)
 
 
+def test_complex_X1():
+    '''Verify that the routine handles complex inputs correctly.
+
+    If either one of the arrays is complex, the complex version of the
+    LAPACK routine should be called (zggsvd3). The returns singular
+    values are always real, but the returned matrices should be complex
+    as well.
+    '''
+    path = os.path.join(os.path.dirname(__file__), 'square/{}.txt')
+    a = np.loadtxt(path.format('a'))
+    b = np.loadtxt(path.format('b')).astype(np.complex)
+    c, s, x, u, v = pygsvd.gsvd(a, b, full_matrices=True, extras='uv', X1=True)
+    assert c.dtype == np.double  # Singular values are always real
+    assert s.dtype == np.double  # Singular values are always real
+    for matrix in (x, u, v):
+        assert np.iscomplexobj(matrix)
+
+    assert np.allclose(u.T.dot(a).dot(x), np.diag(c).astype(np.complex))
+    assert np.allclose(v.T.dot(b).dot(x), np.diag(s).astype(np.complex))
+
+
 def test_dtype_promotion():
     '''Verify that the routine handles inputs of non-double type correctly.
 
